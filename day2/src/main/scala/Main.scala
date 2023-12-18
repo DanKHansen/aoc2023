@@ -1,5 +1,5 @@
 import scala.util.matching.Regex
-@main def run: Unit =
+@main def day2: Unit =
     println { two_a(input).sum }
     println { two_b(input).sum }
 

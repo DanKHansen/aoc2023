@@ -1,5 +1,5 @@
 import scala.util.matching.Regex
-@main def run(): Unit =
+@main def day1(): Unit =
     println(s"one: $one, two: $two")
 
 val input: List[String] = {
