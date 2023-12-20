@@ -1,49 +1,43 @@
 import scala.util.matching.Regex
-@main def day3: Unit =
-    println(s)
+val regEx: Regex = """\d+""".r
 
-def ls =
-    io.Source
-        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3.txt")
-        .getLines()
-        .toArray
+@main def day3(): Unit =
+    println(day3a)
 
-val regEx = """\d+""".r
-
-val r: Array[Iterator[String]] =
-    for l <- ls
-    yield {
-        for {
-            m <- regEx.findAllIn(l).matchData
-        } yield {
-            {
-                if (ls.indexOf(l) - 1 <= 0) ""
-                else
-                    ls(ls.indexOf(l) - 1).substring(
+def day3a: Int =
+    ls.map(l =>
+        regEx
+            .findAllIn(l)
+            .matchData
+            .map { m =>
+                s"${
+                        if ls.indexOf(l) - 1 > 0 then
+                            ls(ls.indexOf(l) - 1).substring(
+                              if (m.start < 1) m.start else m.start - 1,
+                              if (m.end >= l.length) m.end else m.end + 1
+                            )
+                        else ""
+                    }${ls(ls.indexOf(l)).substring(
                       if (m.start < 1) m.start else m.start - 1,
                       if (m.end >= l.length) m.end else m.end + 1
-                    )
-            } + {
-                ls(ls.indexOf(l)).substring(
-                  if (m.start < 1) m.start else m.start - 1,
-                  if (m.end >= l.length) m.end else m.end + 1
-                )
-            } + {
-                if (ls.indexOf(l) + 1 >= ls.length - 1) ""
-                else
-                    ls(ls.indexOf(l) + 1).substring(
-                      if (m.start < 1) m.start else m.start - 1,
-                      if (m.end >= l.length) m.end else m.end + 1
-                    )
+                    )}${
+                        if ls.indexOf(l) + 1 < ls.length - 1 then
+                            ls(ls.indexOf(l) + 1).substring(
+                              if (m.start < 1) m.start else m.start - 1,
+                              if (m.end >= l.length) m.end else m.end + 1
+                            )
+                        else ""
+                    }"
             }
-        }
-    }
-
-val s: Int = r
-    .map(i =>
+    ).map(i =>
         i.map(s =>
-            if (s.filter(_.!=('.')).filterNot(_.isDigit).length == 0) 0
+            if (s.filter(_.!=('.')).forall(_.isDigit)) 0
             else regEx.findFirstMatchIn(s).get.matched.toInt
         ).sum
-    )
-    .sum
+    ).sum
+
+def ls: Array[String] =
+    io.Source
+        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3a_ex.txt")
+        .getLines()
+        .toArray
