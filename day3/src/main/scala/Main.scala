@@ -5,11 +5,15 @@ val regEx: Regex = """\d+""".r
     println(day3a)
 
 def day3a: Int =
+    val ls = io.Source
+        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3a_ex.txt")
+        .getLines()
+        .toArray
     ls.map(l =>
         regEx
             .findAllIn(l)
             .matchData
-            .map { m =>
+            .map(m =>
                 s"${
                         if ls.indexOf(l) - 1 > 0 then
                             ls(ls.indexOf(l) - 1).substring(
@@ -28,16 +32,10 @@ def day3a: Int =
                             )
                         else ""
                     }"
-            }
+            )
     ).map(i =>
         i.map(s =>
             if (s.filter(_.!=('.')).forall(_.isDigit)) 0
             else regEx.findFirstMatchIn(s).get.matched.toInt
         ).sum
     ).sum
-
-def ls: Array[String] =
-    io.Source
-        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3a_ex.txt")
-        .getLines()
-        .toArray
