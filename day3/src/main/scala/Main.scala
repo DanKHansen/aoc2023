@@ -15,24 +15,24 @@ def day3a: Int =
             .findAllIn(l)
             .matchData
             .map(m =>
-                s"${
-                        if ls.indexOf(l) - 1 > 0 then
-                            ls(ls.indexOf(l) - 1).substring(
-                              if (m.start < 1) m.start else m.start - 1,
-                              if (m.end >= l.length) m.end else m.end + 1
-                            )
-                        else ""
-                    }${ls(ls.indexOf(l)).substring(
-                      if (m.start < 1) m.start else m.start - 1,
-                      if (m.end >= l.length) m.end else m.end + 1
-                    )}${
-                        if ls.indexOf(l) + 1 < ls.length - 1 then
-                            ls(ls.indexOf(l) + 1).substring(
-                              if (m.start < 1) m.start else m.start - 1,
-                              if (m.end >= l.length) m.end else m.end + 1
-                            )
-                        else ""
-                    }"
+                "%s%s%s".format(
+                  if ls.indexOf(l) - 1 > 0 then
+                      ls(ls.indexOf(l) - 1).substring(
+                        if (m.start < 1) m.start else m.start - 1,
+                        if (m.end >= l.length) m.end else m.end + 1
+                      )
+                  else "",
+                  ls(ls.indexOf(l)).substring(
+                    if (m.start < 1) m.start else m.start - 1,
+                    if (m.end >= l.length) m.end else m.end + 1
+                  ),
+                  if ls.indexOf(l) + 1 < ls.length - 1 then
+                      ls(ls.indexOf(l) + 1).substring(
+                        if (m.start < 1) m.start else m.start - 1,
+                        if (m.end >= l.length) m.end else m.end + 1
+                      )
+                  else ""
+                )
             )
     ).map(i =>
         i.map(s =>
@@ -41,7 +41,7 @@ def day3a: Int =
         ).sum
     ).sum
 
-def day3b =
+def day3b: Array[Iterator[String]] =
     val ls: Array[String] = io.Source
         .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3.txt")
         .getLines()
@@ -50,17 +50,17 @@ def day3b =
         regEx2
             .findAllIn(l)
             .matchData
-            .map(m => // check if any number-candidates in adjecent cell
-                (
-                  ls((ls.indexOf(l) - 1))
+            .map(m => // check if any number-candidates in adjacent cell
+                "%s\n%s\n%s\n".format(
+                  ls(ls.indexOf(l) - 1)
                       .substring(m.start - 1, m.start + 2)
-                      .mkString + "\n" +
-                      ls((ls.indexOf(l)))
-                          .substring(m.start - 1, m.start + 2)
-                          .mkString + "\n" +
-                      ls((ls.indexOf(l) + 1))
-                          .substring(m.start - 1, m.start + 2)
-                          .mkString + "\n"
+                      .mkString,
+                  ls(ls.indexOf(l))
+                      .substring(m.start - 1, m.start + 2)
+                      .mkString,
+                  ls(ls.indexOf(l) + 1)
+                      .substring(m.start - 1, m.start + 2)
+                      .mkString
                 )
             )
     )
