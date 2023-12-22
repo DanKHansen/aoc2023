@@ -1,11 +1,12 @@
 import scala.util.matching.Regex
 val regEx: Regex = """\d+""".r
+val regEx2: Regex = """\*""".r
 
 @main def day3(): Unit =
-    println(day3a)
+    day3b.flatten.foreach(println)
 
 def day3a: Int =
-    val ls = io.Source
+    val ls: Array[String] = io.Source
         .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3a_ex.txt")
         .getLines()
         .toArray
@@ -39,3 +40,27 @@ def day3a: Int =
             else regEx.findFirstMatchIn(s).get.matched.toInt
         ).sum
     ).sum
+
+def day3b =
+    val ls: Array[String] = io.Source
+        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3.txt")
+        .getLines()
+        .toArray
+    ls.map(l =>
+        regEx2
+            .findAllIn(l)
+            .matchData
+            .map(m => // check if any number-candidates in adjecent cell
+                (
+                  ls((ls.indexOf(l) - 1))
+                      .substring(m.start - 1, m.start + 2)
+                      .mkString + "\n" +
+                      ls((ls.indexOf(l)))
+                          .substring(m.start - 1, m.start + 2)
+                          .mkString + "\n" +
+                      ls((ls.indexOf(l) + 1))
+                          .substring(m.start - 1, m.start + 2)
+                          .mkString + "\n"
+                )
+            )
+    )
