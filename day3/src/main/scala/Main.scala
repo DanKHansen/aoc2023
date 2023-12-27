@@ -1,9 +1,10 @@
 import scala.util.matching.Regex
+import scala.util.matching.Regex.Match
 val regEx: Regex = """\d+""".r
 val regEx2: Regex = """\*""".r
 
 @main def day3(): Unit =
-    day3b.flatten.foreach(println)
+    println(day3b)
 
 def day3a: Int =
     val ls: Array[String] = io.Source
@@ -41,7 +42,7 @@ def day3a: Int =
         ).sum
     ).sum
 
-def day3b: Array[Iterator[String]] =
+def day3b: Int =
     val ls: Array[String] = io.Source
         .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/3.txt")
         .getLines()
@@ -51,16 +52,25 @@ def day3b: Array[Iterator[String]] =
             .findAllIn(l)
             .matchData
             .map(m => // check if any number-candidates in adjacent cell
-                "%s\n%s\n%s\n".format(
-                  ls(ls.indexOf(l) - 1)
-                      .substring(m.start - 1, m.start + 2)
-                      .mkString,
-                  ls(ls.indexOf(l))
-                      .substring(m.start - 1, m.start + 2)
-                      .mkString,
-                  ls(ls.indexOf(l) + 1)
-                      .substring(m.start - 1, m.start + 2)
-                      .mkString
-                )
+
+                (regEx
+                    .findAllMatchIn(ls(ls.indexOf(l) - 1))
+                    .filter(p =>
+                        (p.end - 1 == m.start - 1) || (p.end - 1 == m.start) || (p.end - 1 == m.start + 1) || (p.start == m.start - 1) || (p.start == m.start) || (p.start == m.start + 1)
+                    )
+                    .map(m => m.matched.toInt) ::
+                    regEx
+                        .findAllMatchIn(ls(ls.indexOf(l)))
+                        .filter(p =>
+                            (p.end - 1 == m.start - 1) || (p.start == m.start + 1)
+                        )
+                        .map(m => m.matched.toInt) ::
+                    regEx
+                        .findAllMatchIn(ls(ls.indexOf(l) + 1))
+                        .filter(p =>
+                            (p.end - 1 == m.start - 1) || (p.end - 1 == m.start) || (p.end - 1 == m.start + 1) || (p.start == m.start - 1) || (p.start == m.start) || (p.start == m.start + 1)
+                        )
+                        .map(m => m.matched.toInt) :: Nil).flatten
             )
-    )
+            .map(xs => if xs.size == 2 then xs.reduce(_ * _) else 0)
+    ).flatten.sum
