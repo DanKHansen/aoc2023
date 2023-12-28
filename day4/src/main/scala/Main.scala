@@ -13,18 +13,16 @@ def day4a =
               .split(" ")
               .map(_.trim)
               .filterNot(_.isEmpty)
-              .map(_.toInt)
-              .toList,
+              .map(_.toInt),
           l.substring(l.indexOf("|") + 1)
               .split(" ")
               .map(_.trim)
               .filterNot(_.isEmpty)
               .map(_.toInt)
-              .toList
         )
-    ).map(winners => winners._2.length - (winners._2 diff winners._3).length)
-        .map(power => {
-            if power == 0 then 0 else scala.math.pow(2, power - 1)
+    ).map(t => t._2.length - (t._2 diff t._3).length)
+        .map(p => {
+            if p == 0 then 0 else math.pow(2, p - 1)
         })
         .sum
     // )
