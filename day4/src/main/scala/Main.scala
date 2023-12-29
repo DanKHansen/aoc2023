@@ -1,6 +1,6 @@
 import scala.annotation.tailrec
 val src: List[String] = io.Source
-    .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/4.txt")
+    .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/4a_ex.txt")
     .getLines
     .toList
 @main def day4(): Unit =
