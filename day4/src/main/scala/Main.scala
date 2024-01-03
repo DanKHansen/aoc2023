@@ -1,8 +1,11 @@
-lazy val wins: List[Int] =
-    io.Source
-        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/4.txt")
-        .getLines
-        .toList
+import scala.util.Using
+
+lazy val wins: Seq[Int] = {
+    val src = Using(
+      io.Source.fromFile("/home/dankh/scalaprojects/aoc_2023/sources/4.txt")
+    )(_.getLines.toList)
+
+    src.get
         .map(l =>
             (
               l.substring(l.indexOf(":") + 1, l.indexOf("|"))
@@ -16,16 +19,19 @@ lazy val wins: List[Int] =
             )
         )
         .map(t => t._2.intersect(t._1).length)
-@main def runday4(): Unit =
-    println(day4a())
-    println(day4b())
 
-def day4a(): Int =
-    wins.map(x => if x == 0 then 0 else math.pow(2, x - 1).toInt).sum
+}
 
-def day4b(): Int =
+@main def run(): Unit =
+    println(day4a(wins))
+    println(day4b(wins))
+
+def day4a(input: Seq[Int]): Int =
+    input.map(x => if x == 0 then 0 else math.pow(2, x - 1).toInt).sum
+
+def day4b(input: Seq[Int]): Int =
     val queue = collection.mutable.Queue(1)
-    wins.foldLeft(0) { (sum, score) =>
+    input.foldLeft(0) { (sum, score) =>
         val count = if (queue.isEmpty) 1 else queue.dequeue()
         for (i <- 0 until score) {
             if (i < queue.size) queue.update(i, queue(i) + count)
