@@ -31,6 +31,7 @@ def day4a(input: Seq[Int]): Int =
 
 def day4b(input: Seq[Int]): Int =
     val queue = collection.mutable.Queue(1)
+    // re-write to reduce instead of foldLeft
     input.foldLeft(0) { (sum, score) =>
         val count = if (queue.isEmpty) 1 else queue.dequeue()
         for (i <- 0 until score) {
