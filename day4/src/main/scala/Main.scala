@@ -30,9 +30,7 @@ private def day4a(input: List[Int]): Int =
 private def day4b(input: List[Int]): Int =
     val queue = mutable.Queue(1)
     input.foldLeft(0) { (idx, copies) =>
-        val count: Int =
-            if (queue.isEmpty) 1
-            else queue.dequeue
+        val count: Int = if (queue.isEmpty) 1 else queue.dequeue
         for (i <- 0 until copies)
             if (i < queue.size) queue.update(i, queue(i) + count)
             else queue.enqueue(count + 1)
