@@ -29,6 +29,7 @@ metals.sbt
 # IDEA
 *.iml
 *.xml
+.idea/
 */.idea/*
 /.idea_modules/
 /.worksheet/
