@@ -30,6 +30,8 @@ metals.sbt
 .iml
 .xml
 .idea
+.idea/
 /.idea/modules
+/.idea/modules/
 /.idea_modules/
 /.worksheet/
