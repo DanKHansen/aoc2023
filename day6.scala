@@ -1,1 +1,1 @@
-@main def day1(): Unit = ???
+@main def day6(): Unit = ???
