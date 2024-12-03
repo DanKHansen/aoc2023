@@ -4,7 +4,7 @@ import scala.util.matching.Regex
 
 val input: List[String] = {
     val src = scala.io.Source
-        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/1.txt")
+        .fromFile("/home/dankh/scalaprojects/aoc2023/sources/1.txt")
     val l = src.getLines().toList
     src.close()
     l
