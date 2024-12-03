@@ -1,5 +1,5 @@
 import scala.util.matching.Regex
-@main def day2: Unit =
+@main def day2(): Unit =
     println { two_a(input).sum }
     println { two_b(input).sum }
 
@@ -9,7 +9,7 @@ val cubes: Map[String, Int] = Map("red" -> 12, "green" -> 13, "blue" -> 14)
 
 def input: Iterator[String] =
     io.Source
-        .fromFile("/home/dankh/scalaprojects/aoc_2023/sources/2.txt")
+        .fromFile("/home/dankh/scalaprojects/aoc2023/sources/2.txt")
         .getLines()
 
 def two_a(in: Iterator[String]): Iterator[Int] =
