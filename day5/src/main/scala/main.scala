@@ -1,160 +1,112 @@
-import scala.annotation.tailrec
-import scala.util.{Failure, Success, Try}
+import scala.io.Source
 
-@main
-def main(): Unit =
-    val input: Array[String] = almanac match
-        case Failure(ex)    => Array(ex.getMessage)
-        case Success(value) => value
+def sections: Array[String] =
+   val file = "5.txt"
+   val splitBy = "\r?\n\\s*\r?\n"
+   val mainFolder = "/home/dankh/scalaprojects/aoc2023/sources/"
+   val a = Source.fromFile(mainFolder + file)
+   val ret = a.mkString.split(splitBy)
+   a.close()
+   ret
 
-    val seedList: Array[Long] = input.headOption match
-        case Some(s"seeds: $value") =>
-            value.split("\\s+").map(_.toLong)
-        case _ => Array.emptyLongArray
-
-    val seedRanges: List[LongRange] = seedList
-        .grouped(2)
-        .map(g => LongRange(g.head, g.head + g.last - 1))
-        .toList
-        .sortWith(_.first < _.first)
-
-    val categoryMaps: Array[Array[RuleMap]] = input.tail.map:
-        _.split("\r?\n").tail
-            .map:
-                _.split("\\s+")
-                    .map(_.toLong) match {
-                    case Array(d, s, l) => RuleMap(LongRange(d, s), l)
-                    // dest, src, range
-                }
-            .sortBy(t => t.rng.last)
-
-    val categoryMaps2: List[List[RuleMap]] = input.toList.tail.map:
-        _.split("\r?\n").tail
-            .map:
-                _.split("\\s+")
-                    .map(_.toLong) match {
-                    case Array(d, s, l) =>
-                        RuleMap(
-                          LongRange(s, s + l - 1),
-                          d - s
-                        ) // src_start, src_end, mapping_rule to apply
-                }
-            .sortBy(t => t.rng.first)
-            .toList
-
-    val day5a: Array[Long] = seedList.map(s => recurse(s, categoryMaps))
-
-    val day5b: List[List[LongRange]] = seedRanges.map(r => f(List(r), categoryMaps2))
-
-    println(seedList.toList)
-    println("*" * 6)
-    seedRanges foreach println
-    println("*" * 6)
-    categoryMaps.map(_.toList).toList foreach println
-    println("*" * 6)
-    categoryMaps2 foreach println
-    println("*" * 6)
-    println(s"Day5a: ${day5a.toList.sorted.min}")
-    println(
-      s"Day5b: ${day5b.map(l => l.sortBy(_.first).minBy(_.first).first).min}"
-    )
-
-end main
-
-def f(
-    seedRngs: List[LongRange],
-    catMaps: List[List[RuleMap]]
-): List[LongRange] = {
-
-    @tailrec
-    def localF(
-        seedRng: List[LongRange],
-        ruleMaps: List[RuleMap]
-    ): List[LongRange] = {
-
-        if ruleMaps.isEmpty then f(seedRng, catMaps.tail)
-        else
-            (seedRng, ruleMaps) match
-                case (in, rule) // option A
-                    if in.last.first >= rule.head.rng.first && in.last.first <= rule.head.rng.last && in.last.last > rule.head.rng.last =>
-                    localF(
-                      List(
-                        LongRange(
-                          in.last.first + rule.head.rule,
-                          rule.head.rng.last + rule.head.rule
-                        ),
-                        LongRange(rule.head.rng.last, in.last.last)
-                      ),
-                      ruleMaps.tail
-                    )
-                case (in, rule) // option B
-                    if in.last.first < rule.head.rng.first && in.last.last <= rule.head.rng.last =>
-                    f(
-                      List(
-                        in.head,
-                        LongRange(in.last.first, rule.head.rng.first),
-                        LongRange(
-                          rule.head.rng.first + rule.head.rule,
-                          in.last.last + rule.head.rule
-                        )
-                      ),
-                      catMaps.tail
-                    )
-                case (in, rule) // Option C
-                    if in.last.first >= rule.head.rng.first && in.last.last <= rule.head.rng.last =>
-                    f(
-                      List(
-                        in.head,
-                        LongRange(
-                          in.last.first + rule.head.rule,
-                          in.last.last + rule.head.rule
-                        )
-                      ),
-                      catMaps.tail
-                    )
-                case (in, rule) // option D
-                    if in.last.first < rule.head.rng.first && in.last.last > rule.head.rng.last =>
-                    localF(
-                      List(
-                        LongRange(in.last.first, rule.head.rng.first - 1),
-                        LongRange(
-                          rule.head.rng.first + rule.head.rule,
-                          rule.head.rng.last - 1 + rule.head.rule
-                        ),
-                        LongRange(rule.head.rng.last, in.last.last)
-                      ),
-                      ruleMaps.tail
-                    )
-                case (in, rule) // Option E/F
-                    if in.last.first > rule.head.rng.last || in.last.last < rule.head.rng.first =>
-                    localF(in, ruleMaps.tail)
-                case (_, _) => f(seedRng, catMaps.tail)
-
-    }
-    if catMaps.nonEmpty then localF(seedRngs, catMaps.head)
-    else seedRngs
+val seeds: Seq[Long] = sections(0) match
+   case s"seeds: ${seedsStr}" => seedsStr.split(" ").map(_.toLong)
+val maps: Maps = {
+   val mapBuilder = Seq.newBuilder[Seq[MapEntry]]
+   for (i <- 1 until sections.length)
+      mapBuilder.addOne(
+        sections(i)
+           .split("\n")
+           .tail
+           .map { line =>
+              val Array(dst, src, len) = line.split(" ");
+              MapEntry(dst.toLong, src.toLong, len.toLong)
+           }
+           .toSeq)
+   mapBuilder.result()
 }
-def almanac: Try[Array[String]] =
-    val file = "5.txt"
-    val splitBy =
-        "\r?\n\\s*\r?\n" // \r carriage return \n newline \s whitespace
-    val mainFolder = "/home/dankh/scalaprojects/aoc_2023/sources/"
-    util.Using(io.Source.fromFile(mainFolder + file))(
-      _.mkString.split(splitBy)
-    )
-end almanac
-@tailrec
-def recurse(in: Long, l: Array[Array[RuleMap]]): Long =
-    if l.isEmpty then in
-    else
-        l.head.flatMap(r => check(in, r)) match
-            case Array(x) => recurse(x, l.tail)
-            case _        => recurse(in, l.tail)
-end recurse
-def check(input: Long, r: RuleMap): Option[Long] =
-    if input >= r.rng.last && input < r.rng.last + r.rule then
-        Some(r.rng.first - r.rng.last + input)
-    else None
-end check
-case class LongRange(first: Long, last: Long)
-case class RuleMap(rng: LongRange, rule: Long)
+
+type Source = Long
+type Destination = Long
+
+case class MapEntry(destinationStart: Destination, sourceStart: Source, rangeLength: Long):
+   def sourceEnd: Long = sourceStart + rangeLength
+   def containsSource(value: Long): Boolean = sourceStart <= value && value < sourceEnd
+   def distance: Long = destinationStart - sourceStart
+   override def toString: String =
+      s"MapEntry(srcStart=$sourceStart,srcEnd=$sourceEnd,dstStart=$destinationStart,distance=$distance)"
+
+type Maps = Seq[Seq[MapEntry]]
+
+object SeedRange:
+   def fromUntil(start: Long, end: Long): SeedRange = SeedRange(start, end - start)
+
+case class SeedRange(start: Long, length: Long):
+   def end: Long = start + length
+   def contains(value: Long): Boolean = start <= value && value < end
+   def translate(by: Long): SeedRange = SeedRange(start + by, length)
+
+def mapping(map: Seq[MapEntry])(src: Source): Destination = map
+   .find { case MapEntry(_, srcStart, len) => srcStart <= src && src < srcStart + len }
+   .map { case MapEntry(dstStart, srcStart, _) => dstStart + (src - srcStart) }
+   .getOrElse(src)
+
+def findLocation(maps: Maps, seed: Source): Destination =
+   maps.foldLeft[Source => Destination](identity)((acc, map) => acc andThen mapping(map)).apply(seed)
+
+def seedRanges(seeds: Seq[Long]): Set[SeedRange] =
+   seeds.grouped(2).map { case Seq(start, length) => SeedRange(start, length) }.toSet
+
+enum SplitResult:
+   case Matched(seedRange: SeedRange, distance: Long)
+   case Unmatched(seedRange: SeedRange)
+
+def translateRange(usingMapEntries: Seq[MapEntry])(seedRange: SeedRange): Set[SeedRange] = {
+   val res = scala.collection.mutable.Set.empty[SeedRange]
+   val unmatchedRanges = scala.collection.mutable.Queue.empty[SeedRange]
+   unmatchedRanges.addOne(seedRange)
+
+   for mapEntry <- usingMapEntries do
+      val unmatchedRangesNext = scala.collection.mutable.Set.empty[SeedRange]
+      while unmatchedRanges.nonEmpty do
+         val unmatchedRange: SeedRange = unmatchedRanges.removeHead(false)
+         for splitResult <- calculatedSplits(mapEntry, unmatchedRange) do
+            splitResult match
+               case SplitResult.Matched(range, distance) =>
+                  res.addOne(range.translate(distance))
+               case SplitResult.Unmatched(unmatched) =>
+                  if unmatchedRange != unmatched then unmatchedRanges.addOne(unmatched)
+                  else unmatchedRangesNext.addOne(unmatched)
+      unmatchedRanges.addAll(unmatchedRangesNext)
+
+   res.addAll(unmatchedRanges)
+   res.toSet
+}
+
+def calculatedSplits(mapEntry: MapEntry, seedRange: SeedRange): Seq[SplitResult] =
+   if mapEntry.containsSource(seedRange.start) && mapEntry.containsSource(seedRange.end - 1) then
+      Seq(SplitResult.Matched(seedRange, mapEntry.distance))
+   else if mapEntry.containsSource(seedRange.start - 1) then
+      Seq(
+        SplitResult.Matched(SeedRange.fromUntil(seedRange.start, mapEntry.sourceEnd), mapEntry.distance),
+        SplitResult.Unmatched(SeedRange.fromUntil(mapEntry.sourceEnd, seedRange.end))
+      )
+   else if mapEntry.containsSource(seedRange.end - 1) then
+      Seq(
+        SplitResult.Unmatched(SeedRange.fromUntil(seedRange.start, mapEntry.sourceStart)),
+        SplitResult.Matched(SeedRange.fromUntil(mapEntry.sourceStart, seedRange.end), mapEntry.distance)
+      )
+   else if seedRange.contains(mapEntry.sourceStart) && seedRange.contains(mapEntry.sourceEnd - 1) then
+      Seq(
+        SplitResult.Unmatched(SeedRange.fromUntil(seedRange.start, mapEntry.sourceStart)),
+        SplitResult.Matched(SeedRange.fromUntil(mapEntry.sourceStart, mapEntry.sourceEnd), mapEntry.distance),
+        SplitResult.Unmatched(SeedRange.fromUntil(mapEntry.sourceEnd, seedRange.end))
+      )
+   else Seq(SplitResult.Unmatched(seedRange))
+
+def findLocation(maps: Maps, seeds: Set[SeedRange]): Set[SeedRange] =
+   maps.foldLeft(seeds) { case (ranges, mapEntries) => ranges.flatMap(translateRange(mapEntries)) }
+
+@main def main(): Unit =
+   println(s"1: ${seeds.map(findLocation(maps, _)).min}")
+   println(s"2: ${findLocation(maps, seedRanges(seeds)).map(_.start).min}")

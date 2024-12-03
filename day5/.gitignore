@@ -27,6 +27,7 @@ local.sbt
 metals.sbt
 
 # IDEA
+*.iml
 .idea
 .idea_modules
 /.worksheet/
