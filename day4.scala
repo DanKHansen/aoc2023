@@ -2,8 +2,8 @@ import scala.collection.mutable
 import scala.util.Using
 
 @main def run(): Unit =
-   println(day4a(wins)) // 27454
-   println(day4b(wins)) // 6857330
+   println(s"1: ${day4a(wins)}")
+   println(s"2: ${day4b(wins)}")
 
 private def wins: List[Int] =
    Using(

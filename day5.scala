@@ -1,10 +1,12 @@
-import scala.io.Source
+@main def day5(): Unit =
+   println(s"1: ${seeds.map(findLocation(maps, _)).min}")
+   println(s"2: ${findLocation(maps, seedRanges(seeds)).map(_.start).min}")
 
 def sections: Array[String] =
    val file = "5.txt"
    val splitBy = "\r?\n\\s*\r?\n"
    val mainFolder = "/home/dankh/scalaprojects/aoc2023/sources/"
-   val a = Source.fromFile(mainFolder + file)
+   val a = io.Source.fromFile(mainFolder + file)
    val ret = a.mkString.split(splitBy)
    a.close()
    ret
@@ -19,7 +21,7 @@ val maps: Maps = {
            .split("\n")
            .tail
            .map { line =>
-              val Array(dst, src, len) = line.split(" ");
+              val Array(dst, src, len) = line.split(" ")
               MapEntry(dst.toLong, src.toLong, len.toLong)
            }
            .toSeq)
@@ -33,8 +35,6 @@ case class MapEntry(destinationStart: Destination, sourceStart: Source, rangeLen
    def sourceEnd: Long = sourceStart + rangeLength
    def containsSource(value: Long): Boolean = sourceStart <= value && value < sourceEnd
    def distance: Long = destinationStart - sourceStart
-   override def toString: String =
-      s"MapEntry(srcStart=$sourceStart,srcEnd=$sourceEnd,dstStart=$destinationStart,distance=$distance)"
 
 type Maps = Seq[Seq[MapEntry]]
 
@@ -52,7 +52,7 @@ def mapping(map: Seq[MapEntry])(src: Source): Destination = map
    .getOrElse(src)
 
 def findLocation(maps: Maps, seed: Source): Destination =
-   maps.foldLeft[Source => Destination](identity)((acc, map) => acc andThen mapping(map)).apply(seed)
+   maps.foldLeft[Source => Destination](identity)((acc, map) => acc andThen mapping(map))(seed)
 
 def seedRanges(seeds: Seq[Long]): Set[SeedRange] =
    seeds.grouped(2).map { case Seq(start, length) => SeedRange(start, length) }.toSet
@@ -106,7 +106,3 @@ def calculatedSplits(mapEntry: MapEntry, seedRange: SeedRange): Seq[SplitResult]
 
 def findLocation(maps: Maps, seeds: Set[SeedRange]): Set[SeedRange] =
    maps.foldLeft(seeds) { case (ranges, mapEntries) => ranges.flatMap(translateRange(mapEntries)) }
-
-@main def main(): Unit =
-   println(s"1: ${seeds.map(findLocation(maps, _)).min}")
-   println(s"2: ${findLocation(maps, seedRanges(seeds)).map(_.start).min}")

@@ -1,15 +1,15 @@
 import scala.util.matching.Regex
-val regEx: Regex = """\d+""".r
+private val regEx: Regex = """\d+""".r
 val regEx2: Regex = """\*""".r
 
 @main def day3(): Unit =
-   println((day3a, day3b))
+   println(s"1: $day3a")
+   println(s"2: $day3b")
 
 def day3a: Int =
-   val ls: Array[String] = io.Source
-      .fromFile("/home/dankh/scalaprojects/aoc2023/sources/3.txt")
-      .getLines()
-      .toArray
+   val a = io.Source.fromFile("/home/dankh/scalaprojects/aoc2023/sources/3.txt")
+   val ls = a.getLines().toArray
+   a.close()
    ls.map(l =>
       regEx
          .findAllIn(l)
@@ -41,10 +41,10 @@ def day3a: Int =
       .sum
 
 def day3b: Int =
-   val ls: Array[String] = io.Source
+   val a = io.Source
       .fromFile("/home/dankh/scalaprojects/aoc2023/sources/3.txt")
-      .getLines()
-      .toArray
+   val ls = a.getLines().toArray
+   a.close()
    ls.flatMap(l =>
       regEx2
          .findAllIn(l)
@@ -53,8 +53,8 @@ def day3b: Int =
 
             (regEx
                .findAllMatchIn(ls(ls.indexOf(l) - 1))
-               .filter(p =>
-                  (p.end - 1 == m.start - 1) || (p.end - 1 == m.start) || (p.end - 1 == m.start + 1) || (p.start == m.start - 1) || (p.start == m.start) || (p.start == m.start + 1))
+               .filter(p1 =>
+                  (p1.end - 1 == m.start - 1) || (p1.end - 1 == m.start) || (p1.end - 1 == m.start + 1) || (p1.start == m.start - 1) || (p1.start == m.start) || (p1.start == m.start + 1))
                .map(m => m.matched.toInt) ::
                regEx
                   .findAllMatchIn(ls(ls.indexOf(l)))
