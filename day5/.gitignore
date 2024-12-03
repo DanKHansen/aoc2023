@@ -27,8 +27,8 @@ local.sbt
 metals.sbt
 
 # IDEA
-*.iml
-*.xml
+.iml
+.xml
 .idea/
 /.idea/modules
 /.idea_modules/
